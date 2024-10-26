@@ -1,0 +1,29 @@
+@startuml
+
+
+actor "User" as User
+participant "API Gateway" as APIGateway
+participant "Lambda Function" as Lambda
+participant "Storage Service" as Storage
+participant "Database" as Database
+participant "Event Bus" as EventBus
+participant "Listener" as Listener
+
+User -> APIGateway: Trigger Import
+APIGateway -> Lambda: Invoke /importer
+Lambda -> Storage: Read File
+Storage -> Lambda: File Contents
+
+loop Process Chunks
+    Lambda -> Lambda: Process Chunk
+    Lambda -> Database: Store Transaction
+end
+
+Lambda -> EventBus: Trigger File Imported Event
+EventBus -> Listener: Detect File Imported Event
+Listener -> Database: Refresh Materialized View 'balances'
+Listener -> Database: Refresh Materialized View 'monthly_balances'
+Listener -> EventBus: Confirm Refresh Completed
+EventBus -> User: Notify File Imported and Views Refreshed
+
+@enduml

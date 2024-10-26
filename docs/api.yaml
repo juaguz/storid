@@ -1,0 +1,61 @@
+openapi: "3.0.1"
+info:
+  title: "api"
+  description: "API Gateway for multiple Lambda functions"
+  version: "1.0.0"
+servers:
+  - url: "https://xfiipd7fai.execute-api.us-east-1.amazonaws.com/{basePath}"
+    variables:
+      basePath:
+        default: "prod"
+paths:
+  /sender:
+    post:
+      summary: "Execute Sender Lambda"
+      description: "Triggers the Sender Lambda function to send notifications based on events."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_name:
+                  type: string
+                  example: "send_summary"
+              required:
+                - event_name
+      responses:
+        '200':
+          description: "Successful execution"
+        '400':
+          description: "Bad Request - Invalid input"
+        '500':
+          description: "Internal Server Error"
+  /importer:
+    post:
+      summary: "Execute Importer Lambda"
+      description: "Triggers the Importer Lambda function to import data from a specified file."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_name:
+                  type: string
+                  example: "start_import"
+                file_path:
+                  type: string
+                  example: "file.csv"
+              required:
+                - file_path
+      responses:
+        '200':
+          description: "File imported successfully"
+        '400':
+          description: "Bad Request - Invalid input"
+        '500':
+          description: "Internal Server Error"
+components: {}

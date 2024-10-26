@@ -1,0 +1,78 @@
+services:
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      - "./infra/localstack/init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
+      - "./internal/accounts/transactions/importer/fixtures/random_transactions.csv:/tmp/random_transactions.csv"
+    ports:
+      - "4566:4566"
+      - "4571:4571"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4566/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - storid_network
+
+  smtp:
+    image: rnwood/smtp4dev:latest
+    environment:
+      - SMTP_AUTH_USERNAME=testuser
+      - SMTP_AUTH_PASSWORD=testpass
+      - SMTP_HELO_HOSTNAME=smtp
+      - SMTP_RELAYFORAUTHENTICATEDCLIENTS=TRUE
+    ports:
+      - "25:25"
+      - "80:80"
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "25" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+    networks:
+      - storid_network
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpass
+      - POSTGRES_DB=testdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U testuser" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - storid_network
+
+  swagger:
+    image: swaggerapi/swagger-ui:latest
+    container_name: swagger-ui
+    ports:
+      - "8080:8080"
+    environment:
+      SWAGGER_JSON: /swagger/swagger.yaml
+    volumes:
+      - "./docs/api.yaml:/swagger/swagger.yaml"
+    restart: unless-stopped
+
+
+volumes:
+  pgdata:
+
+networks:
+  storid_network:
+    name: storid_network

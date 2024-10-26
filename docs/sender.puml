@@ -1,0 +1,21 @@
+@startuml
+
+
+actor "User" as User
+participant "API Gateway" as APIGateway
+participant "Lambda Function" as Lambda
+participant "Database" as Database
+participant "Email Service" as EmailService
+
+User -> APIGateway: Trigger /sender
+APIGateway -> Lambda: Invoke /sender
+Lambda -> Database: Read all balances
+Lambda -> Database: Read all monthly balances
+
+loop For each account
+    Lambda -> EmailService: Send email with balances and monthly balances
+end
+
+EmailService -> User: Confirm Emails Sent
+
+@enduml

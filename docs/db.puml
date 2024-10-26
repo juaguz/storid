@@ -1,0 +1,50 @@
+@startuml
+
+entity "accounts" {
+  + id : bigserial (PK)
+  --
+  created_at : timestamp
+  updated_at : timestamp
+  deleted_at : timestamp
+  name : text
+  last_name : text
+  email : text
+}
+
+entity "transactions" {
+  + id : bigserial (PK)
+  --
+  created_at : timestamp
+  updated_at : timestamp
+  deleted_at : timestamp
+  external_id : text (UNIQUE)
+  date : timestamp
+  amount : bigint
+  type : text
+  account_id : bigint (FK)
+}
+
+entity "monthly_balances" {
+  + account_id : bigint (UNIQUE, FK)
+  --
+  total_balance : bigint
+  transaction_count : int
+  avg_credit_amount : bigint
+  avg_debit_amount : bigint
+  month : text
+}
+
+entity "balances" {
+  + account_id : bigint (UNIQUE, FK)
+  --
+  total_balance : bigint
+  transaction_count : int
+  avg_credit_amount : bigint
+  avg_debit_amount : bigint
+}
+
+accounts ||--o{ transactions : "fk_accounts_transactions"
+transactions ||--o{ monthly_balances : "account_id"
+transactions ||--o{ balances : "account_id"
+
+@enduml

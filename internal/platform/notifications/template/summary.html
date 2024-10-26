@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Balance Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .balance-summary {
+            width: 50%;
+            margin: auto;
+            border-collapse: collapse;
+        }
+
+        .balance-summary, .balance-summary th, .balance-summary td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .balance-summary th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+
+        .balance-summary td {
+            text-align: right;
+        }
+
+        .balance-summary caption {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        img {
+            width: 200px;
+            display: block;
+            margin: auto;
+            color: rgb(37, 150, 190);
+        }
+
+    </style>
+</head>
+<body>
+<img src="data:image/png;base64,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"/>
+<table class="balance-summary">
+    <caption>Balance Summary</caption>
+    <tr>
+        <th>Total Balance</th>
+        <th>Avg. Debit Amount</th>
+        <th>Avg. Credit Amount</th>
+    </tr>
+    <tr>
+        <td>{{.TotalBalance}}</td>
+        <td>{{.AvrDebitAmount}}</td>
+        <td>{{.AvrCreditAmount}}</td>
+    </tr>
+</table>
+
+<h2>Monthly Transactions</h2>
+<table class="balance-summary">
+    <tr>
+        <th>Month</th>
+        <th>Transaction Count</th>
+    </tr>
+    {{range .MonthlyBalance}}
+    <tr>
+        <td>{{.Month}}</td>
+        <td>{{.Count}}</td>
+    </tr>
+    {{end}}
+</table>
+</body>
+</html>
